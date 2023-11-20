@@ -134,7 +134,7 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAA6
-        eQAAAk1TRnQBSQFMAgEBDAEAAawBBgGsAQYBGAEAARgBAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFg
+        eQAAAk1TRnQBSQFMAgEBDAEAAdwBBgHcAQYBGAEAARgBAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFg
         AwABYAMAAQEBAAEgBgABkP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A
         /wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AFUAAQEDBAEGAwsBDwMSBBkBIwMdASkDHgErAx0BKQMY
         ASEDEQEXAwoBDgMEAQUDAAEBLwAEAQECAwMEBAEFAwQBBQMDAQQDAgEDAwIBAwMBAQIDAQECAwABAQMA
@@ -814,6 +814,14 @@ You can right click on this textbox to bring up a menu of available fields from 
 
 Default: &lt;Series.Pretty_Name&gt; e.g. The 4400</value>
   </data>
+  <data name="dbOptionParsedNameFromFolder.ToolTip" xml:space="preserve">
+    <value>If the folder name contains "season" or a translation of, then the folder name will be taken from one level up e.g.
+
+For the given file path:
+C:\TV\The Simpsons\Season 1\simpsons.s01e01.mkv
+
+The last folder name is "Season 1", therefore the series name will be taken from the next level up which is "The Simpsons".</value>
+  </data>
   <data name="dbCheckBoxTraktCommunityRatings.ToolTip" xml:space="preserve">
     <value>Ratings from trakt.tv are much better for tv shows and episodes than thetvdb.com.
 
@@ -850,14 +858,6 @@ If Trakt plugin is installed and TVSeries plugin is enabled for sync, it's recom
 
 Note: if you are using the Trakt plugin, it's recommended you enable rate dialog after watched from there. This setting can be used to send
 ratings to both thetvdb.com and trakt or just thetvdb.com.</value>
-  </data>
-  <data name="dbOptionParsedNameFromFolder.ToolTip" xml:space="preserve">
-    <value>If the folder name contains "season" or a translation of, then the folder name will be taken from one level up e.g.
-
-For the given file path:
-C:\TV\The Simpsons\Season 1\simpsons.s01e01.mkv
-
-The last folder name is "Season 1", therefore the series name will be taken from the next level up which is "The Simpsons".</value>
   </data>
   <data name="label68.Text" xml:space="preserve">
     <value>Check the table below if the plugin was able to parse all of the episodes located in your Import Paths  defined above. Episodes not parsed correctly will be highlighted. If renaming your files does not help, you can modify the plugins parser behaviour from the left hand side tree view.</value>

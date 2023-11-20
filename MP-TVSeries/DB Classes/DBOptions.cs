@@ -92,6 +92,7 @@ namespace WindowPlugins.GUITVSeries
         public const string cRandomBanner = "randomBanner";
         public const string cOnlineLanguage = "onlineLanguage";
         public const string cShowDeleteMenu = "ShowDeleteMenu";
+        public const string cEnableWOL = "EnableWOL";
         public const string cMainMirrorHardCoded = "https://thetvdb.com";
         public const string cMainMirror = "mainMirror";
         public const string cGetBlankBanners = "getBlankBanners";
@@ -551,6 +552,9 @@ namespace WindowPlugins.GUITVSeries
 
             if (GetOptions(cShowDeleteMenu) == null)
                 SetOptions(cShowDeleteMenu, true);
+
+            if (GetOptions(cEnableWOL) == null)
+                SetOptions(cEnableWOL, false);
 
             if (GetOptions(cSQLLoggingEnabled) == null)
                 SetOptions(cSQLLoggingEnabled, false);

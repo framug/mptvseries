@@ -46,11 +46,13 @@ namespace WindowPlugins.GUITVSeries
         DBEpisode m_previousEpisode;
         BackgroundWorker PlayPropertyUpdater = new BackgroundWorker();
         public delegate void rateRequest(DBEpisode episode);        
-        public event rateRequest RateRequestOccured;        
+        public event rateRequest RateRequestOccured;
         private bool m_bIsExternalPlayer = false;
         private bool m_bIsExternalDVDPlayer = false;
         private bool m_bIsImageFile = false;
-		private bool listenToExternalPlayerEvents = false;        
+		private bool listenToExternalPlayerEvents = false;
+        private int m_wolResendTime = 1;
+        private int m_wolTimeout = 10;
         #endregion
 
         #region Static Events
@@ -86,9 +88,12 @@ namespace WindowPlugins.GUITVSeries
             MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(Config.GetFile(Config.Dir.Config, "MediaPortal.xml"));
             m_bIsExternalPlayer = !xmlreader.GetValueAsBool("movieplayer", "internal", true);
             m_bIsExternalDVDPlayer = !xmlreader.GetValueAsBool("dvdplayer", "internal", true);
-            
-			// external player handlers
-			Utils.OnStartExternal += new Utils.UtilEventHandler(onStartExternal);
+            // Recover WOL settings from MP MyVideos plugin
+            m_wolResendTime = xmlreader.GetValueAsInt("WOL", "WolResendTime", 1);
+            m_wolTimeout = xmlreader.GetValueAsInt("WOL", "WolTimeout", 10);
+
+            // external player handlers
+            Utils.OnStartExternal += new Utils.UtilEventHandler(onStartExternal);
 			Utils.OnStopExternal += new Utils.UtilEventHandler(onStopExternal);
 
             g_Player.PlayBackStopped += new MediaPortal.Player.g_Player.StoppedHandler(OnPlayBackStopped);
@@ -205,6 +210,12 @@ namespace WindowPlugins.GUITVSeries
                 }
                 #endregion
 
+                if (DBOption.GetOptions(DBOption.cEnableWOL))
+                {
+                    string DirEpisode = Path.GetDirectoryName(episode[DBEpisode.cFilename]);
+                    WakeUpSrv(DirEpisode);
+                }
+
                 #region Removable Media Handling
                 if (!File.Exists(m_currentEpisode[DBEpisode.cFilename]))
                 {
@@ -279,6 +290,66 @@ namespace WindowPlugins.GUITVSeries
             }
         }
         #endregion
+
+        private bool WakeUpSrv(string newFolderName)
+        {
+            VirtualDirectory _virtualDirectory = new VirtualDirectory();
+            DateTime _prevWolTime = DateTime.Now;
+            string _prevServerName = string.Empty;
+            bool wakeOnLanEnabled;
+            if (!Utils.IsUNCNetwork(newFolderName))
+            {
+                // Check if letter drive is a network drive
+                string detectedFolderName = Utils.FindUNCPaths(newFolderName);
+                if (Utils.IsUNCNetwork(detectedFolderName))
+                {
+                    wakeOnLanEnabled = _virtualDirectory.IsWakeOnLanEnabled(_virtualDirectory.GetShare(newFolderName));
+                    newFolderName = detectedFolderName;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                wakeOnLanEnabled = true;
+            }
+
+            string serverName = string.Empty;
+
+            if (wakeOnLanEnabled)
+            {
+                serverName = Utils.GetServerNameFromUNCPath(newFolderName);
+
+                DateTime now = DateTime.Now;
+                TimeSpan ts = now - _prevWolTime;
+
+                if (serverName == _prevServerName && m_wolResendTime * 60 > ts.TotalSeconds)
+                {
+                    return true;
+                }
+
+                _prevWolTime = DateTime.Now;
+                _prevServerName = serverName;
+
+                try
+                {
+                    MPTVSeriesLog.Write("WakeUpSrv: FolderName: ", newFolderName, MPTVSeriesLog.LogLevel.Normal);
+                    MPTVSeriesLog.Write("WakeUpSrv: ShareName: ", _virtualDirectory.GetShare(newFolderName).Name, MPTVSeriesLog.LogLevel.Normal);
+                    MPTVSeriesLog.Write("WakeUpSrv: WOL enabled: ", wakeOnLanEnabled.ToString(), MPTVSeriesLog.LogLevel.Normal);
+                }
+                catch
+                {
+                }
+
+                if (!string.IsNullOrEmpty(serverName))
+                {
+                    return Common.GUIPlugins.WakeupUtils.HandleWakeUpServer(serverName, m_wolTimeout);
+                }
+            }
+            return true;
+        }
 
         #region Private Methods
 

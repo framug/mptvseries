@@ -245,6 +245,7 @@ namespace WindowPlugins.GUITVSeries
 
             checkBox_RandBanner.Checked = DBOption.GetOptions(DBOption.cRandomBanner);            
             this.chkAllowDeletes.Checked = (bool)DBOption.GetOptions(DBOption.cShowDeleteMenu);
+            this.checkBox_WOL.Checked = (bool)DBOption.GetOptions(DBOption.cEnableWOL);
             this.chkUseRegionalDateFormatString.Checked = (bool)DBOption.GetOptions(DBOption.cAltImgLoading);
             txtUserID.Text = DBOption.GetOptions(DBOption.cOnlineUserID);
             chkBlankBanners.Checked = DBOption.GetOptions(DBOption.cGetBlankBanners);
@@ -5070,6 +5071,11 @@ namespace WindowPlugins.GUITVSeries
             }
 
             return CultureDisplayName;
+        }
+
+        private void checkBox_WOL_CheckedChanged(object sender, EventArgs e)
+        {
+            DBOption.SetOptions(DBOption.cEnableWOL, this.checkBox_WOL.Checked);
         }
     }
 
